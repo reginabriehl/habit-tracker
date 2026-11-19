@@ -28,6 +28,8 @@ const elements = {
   monthday: document.querySelector("#monthday"),
   weekdayLabel: document.querySelector('label[for="weekday"]'),
   monthdayLabel: document.querySelector('label[for="monthday"]'),
+  formPrompt: document.querySelector("#form-prompt"),
+  submitHabit: document.querySelector("#submit-habit"),
   openForm: document.querySelector("#open-form"),
   emptyAdd: document.querySelector("#empty-add"),
   cancelForm: document.querySelector("#cancel-form")
@@ -81,6 +83,7 @@ function readData() {
 
 let data = readData();
 let selectedDate = startOfDay(new Date());
+let editingHabitId = null;
 
 function saveData() {
   try {
@@ -272,10 +275,13 @@ function renderHabits() {
     notButton.setAttribute("aria-label", `Mark ${habit.name} as not done`);
     didButton.disabled = isFuture || !due;
     notButton.disabled = isFuture || !due;
+    const editButton = row.querySelector(".edit-button");
     const deleteButton = row.querySelector(".delete-button");
+    editButton.setAttribute("aria-label", `Edit ${habit.name}`);
     deleteButton.setAttribute("aria-label", `Delete ${habit.name}`);
     didButton.addEventListener("click", () => setCheckin(habit.id, true));
     notButton.addEventListener("click", () => setCheckin(habit.id, false));
+    editButton.addEventListener("click", () => openEditForm(habit.id));
     deleteButton.addEventListener("click", () => deleteHabit(habit.id));
     elements.habitList.append(row);
   }
@@ -323,6 +329,20 @@ function addHabit(name, frequency) {
   return true;
 }
 
+function updateHabit(habitId, name, frequency) {
+  const index = data.habits.findIndex((habit) => habit.id === habitId);
+  if (index === -1) return false;
+
+  const updatedHabit = { ...data.habits[index], name: name.trim(), frequency };
+  delete updatedHabit.weekday;
+  delete updatedHabit.monthday;
+  if (frequency === "weekly") updatedHabit.weekday = Number(elements.weekday.value);
+  if (frequency === "monthly") updatedHabit.monthday = Number(elements.monthday.value);
+  data.habits[index] = updatedHabit;
+  saveData();
+  return true;
+}
+
 function deleteHabit(habitId) {
   const habit = data.habits.find((item) => item.id === habitId);
   if (!habit || !window.confirm(`Delete "${habit.name}" and its check-in history?`)) return;
@@ -342,6 +362,27 @@ function updateScheduleFields() {
 }
 
 function showForm() {
+  editingHabitId = null;
+  elements.form.reset();
+  updateScheduleFields();
+  elements.formPrompt.textContent = "What would you like to do?";
+  elements.submitHabit.textContent = "Add habit";
+  elements.form.hidden = false;
+  elements.nameInput.focus();
+}
+
+function openEditForm(habitId) {
+  const habit = data.habits.find((item) => item.id === habitId);
+  if (!habit) return;
+
+  editingHabitId = habit.id;
+  elements.nameInput.value = habit.name;
+  elements.frequency.value = habit.frequency;
+  if (habit.weekday !== undefined) elements.weekday.value = String(habit.weekday);
+  if (habit.monthday !== undefined) elements.monthday.value = String(habit.monthday);
+  updateScheduleFields();
+  elements.formPrompt.textContent = "Update your habit";
+  elements.submitHabit.textContent = "Save changes";
   elements.form.hidden = false;
   elements.nameInput.focus();
 }
@@ -349,6 +390,9 @@ function showForm() {
 function hideForm() {
   elements.form.hidden = true;
   elements.form.reset();
+  editingHabitId = null;
+  elements.formPrompt.textContent = "What would you like to do?";
+  elements.submitHabit.textContent = "Add habit";
   updateScheduleFields();
 }
 
@@ -361,7 +405,10 @@ elements.form.addEventListener("submit", (event) => {
     return;
   }
   elements.nameInput.setCustomValidity("");
-  if (addHabit(cleanName, elements.frequency.value)) {
+  const saved = editingHabitId
+    ? updateHabit(editingHabitId, cleanName, elements.frequency.value)
+    : addHabit(cleanName, elements.frequency.value);
+  if (saved) {
     hideForm();
     render();
   }

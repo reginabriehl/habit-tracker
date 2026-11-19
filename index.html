@@ -99,7 +99,7 @@
             </div>
 
             <form class="habit-form" id="habit-form" hidden>
-              <label class="field-label" for="habit-name">What would you like to do?</label>
+              <label class="field-label" id="form-prompt" for="habit-name">What would you like to do?</label>
               <input id="habit-name" name="name" type="text" maxlength="60" placeholder="e.g. Take a short walk" required autocomplete="off">
               <div class="form-options">
                 <label class="field-label" for="frequency">Repeat</label>
@@ -151,7 +151,7 @@
                 </select>
               </div>
               <div class="form-actions">
-                <button class="primary-button save-button" type="submit">Save habit</button>
+                <button class="primary-button save-button" id="submit-habit" type="submit">Add habit</button>
                 <button class="cancel-button" id="cancel-form" type="button">Cancel</button>
               </div>
             </form>
@@ -205,9 +205,14 @@
           <button class="status-button did-button" type="button">Did it</button>
           <button class="status-button not-button" type="button">Didn't</button>
         </div>
-        <button class="delete-button" type="button" aria-label="Delete habit">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12m-10 0 .7 10h6.6L14 6M8 6V4h4v2m-3 3v4m2-4v4"/></svg>
-        </button>
+        <div class="row-tools">
+          <button class="edit-button" type="button" aria-label="Edit habit">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m13.5 4.5 2 2M4 16l3.6-.8 8.6-8.6a1.4 1.4 0 0 0-2-2l-8.6 8.6L4 16Z"/></svg>
+          </button>
+          <button class="delete-button" type="button" aria-label="Delete habit">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12m-10 0 .7 10h6.6L14 6M8 6V4h4v2m-3 3v4m2-4v4"/></svg>
+          </button>
+        </div>
       </article>
     </template>
   </body>
