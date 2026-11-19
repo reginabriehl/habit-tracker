@@ -1,0 +1,19 @@
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+credentials.json
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# Local logs
+*.log
