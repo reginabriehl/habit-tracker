@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f6f1">
+    <meta name="description" content="A simple habit tracker to help you keep showing up.">
+    <title>Daymark — habit tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Daymark home">
+          <span class="brand-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13"/><path d="m9.5 16.5 4.3 4.2 8.7-9"/></svg>
+          </span>
+          <span>daymark</span>
+        </a>
+        <span class="privacy-note">
+          <svg viewBox="0 0 18 18" aria-hidden="true"><rect x="3.5" y="7.5" width="11" height="8" rx="1.5"/><path d="M6 7.5V5a3 3 0 0 1 6 0v2.5"/></svg>
+          Saved on this device
+        </span>
+      </header>
+
+      <main>
+        <section class="intro">
+          <div>
+            <p class="eyebrow">YOUR HABIT SPACE</p>
+            <h1>Small steps.<br><span>Real change.</span></h1>
+            <p class="intro-copy">A little consistency goes a long way. Check in, keep going, and see how you grow.</p>
+          </div>
+          <div class="date-picker" aria-label="Choose a check-in date">
+            <button class="date-arrow" id="previous-day" type="button" aria-label="Previous day">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12 4-6 6 6 6"/></svg>
+            </button>
+            <div class="date-label">
+              <span id="day-name">Today</span>
+              <strong id="date-value"></strong>
+            </div>
+            <button class="date-arrow" id="next-day" type="button" aria-label="Next day" disabled>
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 4 6 6-6 6"/></svg>
+            </button>
+          </div>
+        </section>
+
+        <section class="overview" aria-label="Habit progress">
+          <article class="overview-card today-card">
+            <div class="card-heading">
+              <span class="card-icon green-icon" aria-hidden="true">
+                <svg viewBox="0 0 22 22"><path d="M4 17V5m0 12h14M7.5 14l3.3-3.5 2.7 2 4.2-5"/></svg>
+              </span>
+              <span class="card-label">THIS CHECK-IN</span>
+            </div>
+            <div class="today-progress">
+              <div class="progress-ring" id="progress-ring" role="img" aria-label="0% completed">
+                <span id="progress-percent">0%</span>
+              </div>
+              <div>
+                <strong class="metric" id="checkin-count">0 <span>/ 0</span></strong>
+                <p class="metric-note" id="progress-note">Nothing due today</p>
+              </div>
+            </div>
+          </article>
+          <article class="overview-card">
+            <div class="card-heading">
+              <span class="card-icon amber-icon" aria-hidden="true">
+                <svg viewBox="0 0 22 22"><path d="M12 20c3.4 0 5.7-2.2 5.7-5.7 0-2.4-1.3-4.3-3.5-6.2.2 1.8-.5 2.7-1.3 3.2.1-3.5-1.5-6.2-4.3-8.6.2 3.5-1 5-2.4 6.8-1 1.4-1.6 2.7-1.6 4.5 0 3.5 2.8 6 7.4 6Z"/></svg>
+              </span>
+              <span class="card-label">THIS WEEK</span>
+            </div>
+            <strong class="metric week-metric" id="week-count">0 <span>of 0 done</span></strong>
+            <p class="metric-note" id="week-note">Your week starts with one step</p>
+          </article>
+          <article class="overview-card">
+            <div class="card-heading">
+              <span class="card-icon lilac-icon" aria-hidden="true">
+                <svg viewBox="0 0 22 22"><circle cx="11" cy="11" r="8"/><path d="m7.5 11 2.3 2.3 4.8-5"/></svg>
+              </span>
+              <span class="card-label">HOW IT'S GOING</span>
+            </div>
+            <strong class="metric rating" id="rating">Ready?</strong>
+            <p class="metric-note" id="rating-note">Your progress will show here</p>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <section class="habits-panel" aria-labelledby="habits-title">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">YOUR ROUTINE</p>
+                <h2 id="habits-title">Habits <span class="count-pill" id="habit-count">0</span></h2>
+              </div>
+              <button class="primary-button" id="open-form" type="button">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg>
+                Add habit
+              </button>
+            </div>
+
+            <form class="habit-form" id="habit-form" hidden>
+              <label class="field-label" for="habit-name">What would you like to do?</label>
+              <input id="habit-name" name="name" type="text" maxlength="60" placeholder="e.g. Take a short walk" required autocomplete="off">
+              <div class="form-options">
+                <label class="field-label" for="frequency">Repeat</label>
+                <select id="frequency" name="frequency">
+                  <option value="daily">Every day</option>
+                  <option value="weekly">Every week</option>
+                  <option value="monthly">Every month</option>
+                </select>
+                <label class="field-label schedule-label" for="weekday">On</label>
+                <select id="weekday" name="weekday" class="schedule-select">
+                  <option value="1">Monday</option>
+                  <option value="2">Tuesday</option>
+                  <option value="3">Wednesday</option>
+                  <option value="4">Thursday</option>
+                  <option value="5">Friday</option>
+                  <option value="6">Saturday</option>
+                  <option value="0">Sunday</option>
+                </select>
+                <label class="field-label schedule-label" for="monthday">Day</label>
+                <select id="monthday" name="monthday" class="schedule-select">
+                  <option value="1">1st of the month</option>
+                  <option value="2">2nd of the month</option>
+                  <option value="3">3rd of the month</option>
+                  <option value="4">4th of the month</option>
+                  <option value="5">5th of the month</option>
+                  <option value="6">6th of the month</option>
+                  <option value="7">7th of the month</option>
+                  <option value="8">8th of the month</option>
+                  <option value="9">9th of the month</option>
+                  <option value="10">10th of the month</option>
+                  <option value="11">11th of the month</option>
+                  <option value="12">12th of the month</option>
+                  <option value="13">13th of the month</option>
+                  <option value="14">14th of the month</option>
+                  <option value="15">15th of the month</option>
+                  <option value="16">16th of the month</option>
+                  <option value="17">17th of the month</option>
+                  <option value="18">18th of the month</option>
+                  <option value="19">19th of the month</option>
+                  <option value="20">20th of the month</option>
+                  <option value="21">21st of the month</option>
+                  <option value="22">22nd of the month</option>
+                  <option value="23">23rd of the month</option>
+                  <option value="24">24th of the month</option>
+                  <option value="25">25th of the month</option>
+                  <option value="26">26th of the month</option>
+                  <option value="27">27th of the month</option>
+                  <option value="28">28th of the month</option>
+                </select>
+              </div>
+              <div class="form-actions">
+                <button class="primary-button save-button" type="submit">Save habit</button>
+                <button class="cancel-button" id="cancel-form" type="button">Cancel</button>
+              </div>
+            </form>
+
+            <div class="habit-list" id="habit-list" aria-live="polite"></div>
+            <div class="empty-state" id="empty-state">
+              <div class="empty-illustration" aria-hidden="true">
+                <svg viewBox="0 0 90 76"><path d="M16 65h58M23 63V24a4 4 0 0 1 4-4h37a4 4 0 0 1 4 4v39" fill="none" stroke="currentColor" stroke-width="2"/><path d="M32 33h11m-11 9h27m-27 9h18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="68" cy="17" r="8" fill="#dfeade" stroke="currentColor" stroke-width="2"/><path d="m64.5 17 2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <h3 id="empty-title">A fresh start, whenever you are</h3>
+              <p id="empty-copy">Start with one small thing you want to make time for.</p>
+              <button class="text-button" id="empty-add" type="button">Add your first habit <span aria-hidden="true">→</span></button>
+            </div>
+          </section>
+
+          <aside class="development-panel" aria-labelledby="development-title">
+            <div class="development-heading">
+              <p class="eyebrow">YOUR DEVELOPMENT</p>
+              <h2 id="development-title">A week at a glance</h2>
+              <p class="panel-copy">A small check-in each day helps you see your progress.</p>
+            </div>
+            <div class="week-chart" id="week-chart" role="img" aria-label="Habit check-ins for this week"></div>
+            <div class="chart-legend">
+              <span><i></i> Completed</span>
+              <span><i></i> Not completed</span>
+            </div>
+            <div class="development-message" id="development-message">
+              <span class="message-mark" aria-hidden="true">✦</span>
+              <p>Your progress will grow with every check-in.</p>
+            </div>
+          </aside>
+        </section>
+
+        <footer class="footer">
+          <span>Progress over perfection.</span>
+          <span id="saved-status">Your habits are saved in this browser.</span>
+        </footer>
+      </main>
+    </div>
+
+    <template id="habit-template">
+      <article class="habit-row">
+        <div class="habit-main">
+          <span class="habit-dot" aria-hidden="true"></span>
+          <div class="habit-copy">
+            <h3></h3>
+            <p class="habit-frequency"></p>
+          </div>
+        </div>
+        <div class="checkin-actions">
+          <button class="status-button did-button" type="button">Did it</button>
+          <button class="status-button not-button" type="button">Didn't</button>
+        </div>
+        <button class="delete-button" type="button" aria-label="Delete habit">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12m-10 0 .7 10h6.6L14 6M8 6V4h4v2m-3 3v4m2-4v4"/></svg>
+        </button>
+      </article>
+    </template>
+  </body>
+</html>
