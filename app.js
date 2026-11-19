@@ -1,7 +1,10 @@
 "use strict";
 
 const STORAGE_KEY = "daymark.habits.v1";
+const THEME_STORAGE_KEY = "daymark.theme.v1";
 const elements = {
+  themeToggle: document.querySelector("#theme-toggle"),
+  themeToggleLabel: document.querySelector("#theme-toggle-label"),
   previousDay: document.querySelector("#previous-day"),
   nextDay: document.querySelector("#next-day"),
   dayName: document.querySelector("#day-name"),
@@ -94,6 +97,34 @@ function readData() {
 let data = readData();
 let selectedDate = startOfDay(new Date());
 let editingHabitId = null;
+
+function getSavedTheme() {
+  try {
+    return localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light";
+  } catch (error) {
+    console.error("Could not read saved theme.", error);
+    return "light";
+  }
+}
+
+function applyTheme(theme) {
+  const isDark = theme === "dark";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  elements.themeToggle.setAttribute("aria-pressed", String(isDark));
+  elements.themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} mode`);
+  elements.themeToggleLabel.textContent = isDark ? "Light mode" : "Dark mode";
+  document.querySelector('meta[name="theme-color"]').content = isDark ? "#171d19" : "#f5f6f1";
+}
+
+function toggleTheme() {
+  const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  applyTheme(theme);
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (error) {
+    console.error("Could not save theme preference.", error);
+  }
+}
 
 function saveData() {
   try {
@@ -446,5 +477,7 @@ elements.nextDay.addEventListener("click", () => {
   render();
 });
 
+elements.themeToggle.addEventListener("click", toggleTheme);
+applyTheme(getSavedTheme());
 updateScheduleFields();
 render();
