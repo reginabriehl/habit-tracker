@@ -112,6 +112,7 @@ function applyTheme(theme) {
   document.documentElement.dataset.theme = isDark ? "dark" : "light";
   elements.themeToggle.setAttribute("aria-pressed", String(isDark));
   elements.themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} mode`);
+  elements.themeToggle.title = `Switch to ${isDark ? "light" : "dark"} mode`;
   elements.themeToggleLabel.textContent = isDark ? "Light mode" : "Dark mode";
   document.querySelector('meta[name="theme-color"]').content = isDark ? "#171d19" : "#f5f6f1";
 }
