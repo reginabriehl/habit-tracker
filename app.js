@@ -8,10 +8,11 @@ const elements = {
   dateValue: document.querySelector("#date-value"),
   progressRing: document.querySelector("#progress-ring"),
   progressPercent: document.querySelector("#progress-percent"),
-  checkinCount: document.querySelector("#checkin-count"),
-  progressNote: document.querySelector("#progress-note"),
-  weekCount: document.querySelector("#week-count"),
-  weekNote: document.querySelector("#week-note"),
+  monthLabel: document.querySelector("#month-label"),
+  monthCount: document.querySelector("#month-count"),
+  monthNote: document.querySelector("#month-note"),
+  dayCount: document.querySelector("#day-count"),
+  dayNote: document.querySelector("#day-note"),
   rating: document.querySelector("#rating"),
   ratingNote: document.querySelector("#rating-note"),
   habitCount: document.querySelector("#habit-count"),
@@ -60,7 +61,7 @@ function readData() {
       throw new Error("Saved habit data has an invalid format.");
     }
 
-    const habits = parsed.habits.filter((habit) =>
+    const savedHabits = parsed.habits.filter((habit) =>
       habit &&
       typeof habit.id === "string" &&
       typeof habit.name === "string" &&
@@ -74,6 +75,15 @@ function readData() {
         if (typeof value === "boolean") checkins[date][id] = value;
       }
     }
+    const habits = savedHabits.map((habit) => {
+      const firstCheckin = Object.keys(checkins)
+        .filter((date) => Object.prototype.hasOwnProperty.call(checkins[date], habit.id))
+        .sort()[0];
+      const createdOn = /^\d{4}-\d{2}-\d{2}$/.test(habit.createdOn || "")
+        ? habit.createdOn
+        : firstCheckin || dayKey(startOfDay(new Date()));
+      return { ...habit, createdOn };
+    });
     return { habits, checkins };
   } catch (error) {
     console.error("Could not read saved habits.", error);
@@ -95,6 +105,7 @@ function saveData() {
 }
 
 function isDue(habit, date) {
+  if (habit.createdOn && dayKey(date) < habit.createdOn) return false;
   if (habit.frequency === "daily") return true;
   if (habit.frequency === "weekly") return Number(habit.weekday) === date.getDay();
   if (habit.frequency === "monthly") return Number(habit.monthday) === date.getDate();
@@ -120,17 +131,16 @@ function getDayTotals(date) {
   return { due: due.length, done, recorded };
 }
 
-function getWeekTotals(date) {
-  const start = getWeekStart(date);
+function getMonthTotals(date) {
+  const cursor = new Date(date.getFullYear(), date.getMonth(), 1);
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
   let due = 0;
   let done = 0;
-  for (let offset = 0; offset < 7; offset += 1) {
-    const day = new Date(start);
-    day.setDate(start.getDate() + offset);
-    if (day > date) break;
-    const totals = getDayTotals(day);
+  while (cursor <= lastDay) {
+    const totals = getDayTotals(cursor);
     due += totals.due;
     done += totals.done;
+    cursor.setDate(cursor.getDate() + 1);
   }
   return { due, done };
 }
@@ -187,23 +197,27 @@ function renderDate() {
 }
 
 function renderOverview() {
-  const totals = getDayTotals(selectedDate);
-  const percent = totals.due ? Math.round((totals.done / totals.due) * 100) : 0;
-  elements.progressRing.style.setProperty("--progress", `${percent * 3.6}deg`);
-  elements.progressRing.setAttribute("aria-label", `${percent}% completed`);
-  elements.progressPercent.textContent = `${percent}%`;
-  elements.checkinCount.innerHTML = `${totals.done} <span>/ ${totals.due}</span>`;
-  elements.progressNote.textContent = totals.due
-    ? `${totals.due - totals.recorded} check-in${totals.due - totals.recorded === 1 ? "" : "s"} left`
-    : "Nothing due today";
+  const dailyTotals = getDayTotals(selectedDate);
+  const monthTotals = getMonthTotals(selectedDate);
+  const monthPercent = monthTotals.due ? Math.round((monthTotals.done / monthTotals.due) * 100) : 0;
+  elements.monthLabel.textContent = `${selectedDate.toLocaleDateString(undefined, { month: "long" }).toUpperCase()} OVERVIEW`;
+  elements.progressRing.style.setProperty("--progress", `${monthPercent * 3.6}deg`);
+  elements.progressRing.setAttribute("aria-label", `${monthPercent}% of scheduled check-ins completed this month`);
+  elements.progressPercent.textContent = `${monthPercent}%`;
+  elements.monthCount.innerHTML = `${monthTotals.done} <span>/ ${monthTotals.due}</span>`;
+  elements.monthNote.textContent = monthTotals.due
+    ? "completed out of this month's scheduled tasks"
+    : "No scheduled check-ins yet";
 
-  const week = getWeekTotals(selectedDate);
-  elements.weekCount.innerHTML = `${week.done} <span>of ${week.due} done</span>`;
-  elements.weekNote.textContent = week.due
-    ? "Small steps add up over the week"
-    : "Your week starts with one step";
+  elements.dayCount.innerHTML = `${dailyTotals.done} <span>/ ${dailyTotals.due} done</span>`;
+  const remaining = dailyTotals.due - dailyTotals.recorded;
+  elements.dayNote.textContent = dailyTotals.due === 0
+    ? "Nothing scheduled for this day"
+    : remaining
+      ? `${remaining} still to check in`
+      : "All scheduled habits checked in";
 
-  const summary = getPeriodSummary(totals);
+  const summary = getPeriodSummary(dailyTotals);
   elements.rating.textContent = summary.rating;
   elements.ratingNote.textContent = summary.note;
   elements.developmentMessage.textContent = summary.message;
@@ -253,28 +267,25 @@ function getFrequencyLabel(habit) {
 
 function renderHabits() {
   elements.habitList.replaceChildren();
+  const dueHabits = getDueHabits(selectedDate);
   const records = data.checkins[dayKey(selectedDate)] || {};
   const isFuture = selectedDate > startOfDay(new Date());
 
-  for (const habit of data.habits) {
+  for (const habit of dueHabits) {
     const row = document.querySelector("#habit-template").content.firstElementChild.cloneNode(true);
     const didButton = row.querySelector(".did-button");
     const notButton = row.querySelector(".not-button");
     const status = records[habit.id];
-    const due = isDue(habit, selectedDate);
     row.querySelector(".habit-copy h3").textContent = habit.name;
-    row.querySelector(".habit-frequency").textContent = due
-      ? getFrequencyLabel(habit)
-      : `${getFrequencyLabel(habit)} · Not due this day`;
-    row.classList.toggle("is-not-due", !due);
+    row.querySelector(".habit-frequency").textContent = getFrequencyLabel(habit);
     didButton.classList.toggle("is-selected", status === true);
     notButton.classList.toggle("is-selected", status === false);
     didButton.setAttribute("aria-pressed", String(status === true));
     notButton.setAttribute("aria-pressed", String(status === false));
     didButton.setAttribute("aria-label", `Mark ${habit.name} as done`);
     notButton.setAttribute("aria-label", `Mark ${habit.name} as not done`);
-    didButton.disabled = isFuture || !due;
-    notButton.disabled = isFuture || !due;
+    didButton.disabled = isFuture;
+    notButton.disabled = isFuture;
     const editButton = row.querySelector(".edit-button");
     const deleteButton = row.querySelector(".delete-button");
     editButton.setAttribute("aria-label", `Edit ${habit.name}`);
@@ -286,15 +297,20 @@ function renderHabits() {
     elements.habitList.append(row);
   }
 
-  elements.habitCount.textContent = data.habits.length;
+  elements.habitCount.textContent = dueHabits.length;
   const hasHabits = data.habits.length > 0;
-  elements.habitList.hidden = !hasHabits;
-  elements.emptyState.hidden = hasHabits;
+  elements.habitList.hidden = dueHabits.length === 0;
+  elements.emptyState.hidden = dueHabits.length > 0;
   if (!hasHabits) {
     elements.emptyTitle.textContent = "A fresh start, whenever you are";
     elements.emptyCopy.textContent = "Start with one small thing you want to make time for.";
-    elements.emptyAdd.hidden = false;
+    elements.emptyAdd.textContent = "Add your first habit →";
+  } else if (dueHabits.length === 0) {
+    elements.emptyTitle.textContent = "Nothing scheduled for this day";
+    elements.emptyCopy.textContent = "Your next habit will appear on its scheduled day.";
+    elements.emptyAdd.textContent = "Add another habit →";
   }
+  elements.emptyAdd.hidden = false;
 }
 
 function render() {
@@ -320,7 +336,8 @@ function addHabit(name, frequency) {
       ? crypto.randomUUID()
       : `${Date.now()}-${Math.random().toString(16).slice(2)}`,
     name: cleanName,
-    frequency
+    frequency,
+    createdOn: dayKey(new Date())
   };
   if (frequency === "weekly") habit.weekday = Number(elements.weekday.value);
   if (frequency === "monthly") habit.monthday = Number(elements.monthday.value);

@@ -49,7 +49,7 @@ h1 span { color: var(--green); }
 .date-label span { color: var(--muted); font-size: 9px; }
 .date-label strong { font-size: 12px; font-weight: 700; }
 
-.overview { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; }
+.overview { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 12px; margin-top: 24px; }
 .overview-card { min-height: 137px; padding: 17px 19px; border: 1px solid #eaede7; border-radius: 11px; background: var(--card); box-shadow: var(--shadow); }
 .card-heading { display: flex; align-items: center; gap: 8px; }
 .card-icon { width: 26px; height: 26px; display: grid; place-items: center; padding: 6px; border-radius: 7px; }
@@ -66,7 +66,7 @@ h1 span { color: var(--green); }
 .today-progress .metric { margin-top: 0; }
 .metric span { color: #929a94; font-size: 10px; font-weight: 500; letter-spacing: 0; }
 .metric-note { margin: 4px 0 0; color: var(--muted); font-size: 9px; }
-.week-metric { margin-top: 19px; }
+.day-metric { margin-top: 19px; }
 .rating { color: var(--green-dark); }
 
 .content-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(270px, .85fr); align-items: start; gap: 16px; margin-top: 36px; }
@@ -99,8 +99,6 @@ h2 { margin: 0; font-size: 19px; letter-spacing: -.5px; }
 .habit-list { display: grid; gap: 8px; }
 .habit-list[hidden] { display: none; }
 .habit-row { min-height: 67px; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #eaede7; border-radius: 9px; background: white; box-shadow: 0 3px 12px rgb(46 57 49 / 2%); }
-.habit-row.is-not-due { background: #fbfcfa; }
-.habit-row.is-not-due .habit-copy h3 { color: #78827a; }
 .habit-main { min-width: 0; flex: 1; display: flex; align-items: center; gap: 10px; }
 .habit-dot { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #a7bba7; }
 .habit-copy { min-width: 0; }
@@ -130,7 +128,6 @@ h2 { margin: 0; font-size: 19px; letter-spacing: -.5px; }
 .text-button { padding: 4px; border: 0; background: transparent; color: var(--green-dark); font-size: 10px; font-weight: 700; cursor: pointer; }
 .text-button span { display: inline-block; padding-left: 2px; transition: transform .15s; }
 .text-button:hover span { transform: translateX(3px); }
-
 .development-panel { overflow: hidden; padding: 20px; border: 1px solid #eaede7; border-radius: 10px; background: white; box-shadow: var(--shadow); }
 .development-heading .eyebrow { margin-bottom: 7px; }
 .development-heading h2 { font-size: 16px; }

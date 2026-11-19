@@ -45,52 +45,12 @@
           </div>
         </section>
 
-        <section class="overview" aria-label="Habit progress">
-          <article class="overview-card today-card">
-            <div class="card-heading">
-              <span class="card-icon green-icon" aria-hidden="true">
-                <svg viewBox="0 0 22 22"><path d="M4 17V5m0 12h14M7.5 14l3.3-3.5 2.7 2 4.2-5"/></svg>
-              </span>
-              <span class="card-label">THIS CHECK-IN</span>
-            </div>
-            <div class="today-progress">
-              <div class="progress-ring" id="progress-ring" role="img" aria-label="0% completed">
-                <span id="progress-percent">0%</span>
-              </div>
-              <div>
-                <strong class="metric" id="checkin-count">0 <span>/ 0</span></strong>
-                <p class="metric-note" id="progress-note">Nothing due today</p>
-              </div>
-            </div>
-          </article>
-          <article class="overview-card">
-            <div class="card-heading">
-              <span class="card-icon amber-icon" aria-hidden="true">
-                <svg viewBox="0 0 22 22"><path d="M12 20c3.4 0 5.7-2.2 5.7-5.7 0-2.4-1.3-4.3-3.5-6.2.2 1.8-.5 2.7-1.3 3.2.1-3.5-1.5-6.2-4.3-8.6.2 3.5-1 5-2.4 6.8-1 1.4-1.6 2.7-1.6 4.5 0 3.5 2.8 6 7.4 6Z"/></svg>
-              </span>
-              <span class="card-label">THIS WEEK</span>
-            </div>
-            <strong class="metric week-metric" id="week-count">0 <span>of 0 done</span></strong>
-            <p class="metric-note" id="week-note">Your week starts with one step</p>
-          </article>
-          <article class="overview-card">
-            <div class="card-heading">
-              <span class="card-icon lilac-icon" aria-hidden="true">
-                <svg viewBox="0 0 22 22"><circle cx="11" cy="11" r="8"/><path d="m7.5 11 2.3 2.3 4.8-5"/></svg>
-              </span>
-              <span class="card-label">HOW IT'S GOING</span>
-            </div>
-            <strong class="metric rating" id="rating">Ready?</strong>
-            <p class="metric-note" id="rating-note">Your progress will show here</p>
-          </article>
-        </section>
-
         <section class="content-grid">
           <section class="habits-panel" aria-labelledby="habits-title">
             <div class="section-head">
               <div>
                 <p class="eyebrow">YOUR ROUTINE</p>
-                <h2 id="habits-title">Habits <span class="count-pill" id="habit-count">0</span></h2>
+                <h2 id="habits-title">Habits for this day <span class="count-pill" id="habit-count">0</span></h2>
               </div>
               <button class="primary-button" id="open-form" type="button">
                 <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg>
@@ -183,6 +143,46 @@
               <p>Your progress will grow with every check-in.</p>
             </div>
           </aside>
+        </section>
+
+        <section class="overview" aria-label="Habit progress">
+          <article class="overview-card today-card">
+            <div class="card-heading">
+              <span class="card-icon green-icon" aria-hidden="true">
+                <svg viewBox="0 0 22 22"><path d="M4 17V5m0 12h14M7.5 14l3.3-3.5 2.7 2 4.2-5"/></svg>
+              </span>
+              <span class="card-label" id="month-label">MONTH OVERVIEW</span>
+            </div>
+            <div class="today-progress">
+              <div class="progress-ring" id="progress-ring" role="img" aria-label="0% completed">
+                <span id="progress-percent">0%</span>
+              </div>
+              <div>
+                <strong class="metric" id="month-count">0 <span>/ 0</span></strong>
+                <p class="metric-note" id="month-note">No scheduled check-ins yet</p>
+              </div>
+            </div>
+          </article>
+          <article class="overview-card">
+            <div class="card-heading">
+              <span class="card-icon amber-icon" aria-hidden="true">
+                <svg viewBox="0 0 22 22"><path d="M5 5.5h12M5 11h12M5 16.5h7"/><path d="m2.5 5.5.8.8 1.4-1.6m-2.2 6.3.8.8 1.4-1.6"/></svg>
+              </span>
+              <span class="card-label">DAILY TASKS</span>
+            </div>
+            <strong class="metric day-metric" id="day-count">0 <span>/ 0 done</span></strong>
+            <p class="metric-note" id="day-note">Nothing scheduled for this day</p>
+          </article>
+          <article class="overview-card">
+            <div class="card-heading">
+              <span class="card-icon lilac-icon" aria-hidden="true">
+                <svg viewBox="0 0 22 22"><circle cx="11" cy="11" r="8"/><path d="m7.5 11 2.3 2.3 4.8-5"/></svg>
+              </span>
+              <span class="card-label">HOW IT'S GOING</span>
+            </div>
+            <strong class="metric rating" id="rating">Ready?</strong>
+            <p class="metric-note" id="rating-note">Your progress will show here</p>
+          </article>
         </section>
 
         <footer class="footer">
